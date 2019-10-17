@@ -47,13 +47,13 @@
     function Traveler(name) {
         this.name = name;
         this.food = 1;
-        this.isHealthy = isHealthy;
+        this.isHealthy = true;
 
     }
 
     function Wagon(capacity) {
         this.capacity = capacity;
-        this.passengers = passengers;
+        this.passengers = [];
     }
 
     Traveler.prototype.hunt() = function () {
@@ -67,7 +67,7 @@
     }
 
     Wagon.prototype.getAvailableSeatCount() = function () {
-
+        
     }
 
     Wagon.prototype.join(traveler) = function () {

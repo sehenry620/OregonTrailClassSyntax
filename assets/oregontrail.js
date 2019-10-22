@@ -51,9 +51,13 @@
 
     }
 
+    //....................................................................
+
     Traveler.prototype.hunt = function () {
         this.food = this.food + 2
     }
+
+    //....................................................................
 
     Traveler.prototype.eat = function () {
         if (this.food >= 1) {
@@ -64,6 +68,8 @@
         }
     }
 
+    //....................................................................
+
     function Wagon(capacity) {
         this.capacity = capacity;
         this.passengers = [];
@@ -72,6 +78,8 @@
     Wagon.prototype.getAvailableSeatCount = function () {
         return this.capacity - this.passengers.length;
     }
+
+    //....................................................................
 
     Wagon.prototype.join = function (traveler) {
         // if available seat count is not 0
@@ -83,60 +91,153 @@
 
     }
 
+    //....................................................................
+
     Wagon.prototype.shouldQuarantine = function () {
         // Return true if there is at least one unhealthy person in the 
         // wagon. Return false if not.
-        // for (i = 0; i < cars.length; i++) {
-        //     text += cars[i] + "<br>";
-        //   }
-        for (let i = 0; i < this.passengers.length; i++){
-            let currentPassengerHealth = this.passengers[i].isHealthy 
-            if (currentPassengerHealth){
+        for (let i = 0; i < this.passengers.length; i++) {
+            let currentPassengerHealth = this.passengers[i].isHealthy
+            if (currentPassengerHealth) {
                 // return false
             }
             else {
-                return true 
+                return true
             }
         }
-        return false 
+        return false
     }
 
+    //....................................................................
+
     Wagon.prototype.totalFood = function () {
-        let foodSum = 0 
-        for (let i = 0; i < this.passengers.length; i++){
+        let foodSum = 0
+        for (let i = 0; i < this.passengers.length; i++) {
             let currentPassengerFood = this.passengers[i].food
             // passengerFood += currentPassengerFood
             foodSum = foodSum + currentPassengerFood
-            console.log(this.passengers)
+            // console.log(this.passengers)
 
         }
-        return foodSum 
+        return foodSum
     }
 
-    // Create a wagon that can hold 2 people
-    let wagon = new Wagon(2);
+    //....................................................................
 
-    // Create three travelers
+    function Doctor(name) {
+        Traveler.call(this, name);
+    }
+
+    Doctor.prototype = Object.create(Traveler.prototype);
+    Doctor.prototype.constructor = Doctor;
+
+    //....................................................................
+
+    //Pass another Traveler as a parameter to the .heal() method, 
+    //and their isHealthy property is changed to true.
+
+    Doctor.prototype.heal = function (traveler) {
+        traveler.isHealthy = true;
+
+    }
+
+    //......................................................................
+
+    //A Hunter is a Traveler that is better at finding food, but 
+    //requires more food to eat. They should start out with 2 food 
+    //instead of just 1 like other travelers do. They can also give 
+    //food to other travelers:
+
+    function Hunter(name) {
+        Traveler.call(this, name);
+        this.food = 2;
+
+    }
+
+    Hunter.prototype = Object.create(Traveler.prototype);
+    Hunter.prototype.constructor = Hunter;
+
+    //......................................................................
+
+    //Increase the hunter's food by 5. (A normal traveler gains only 2.)
+
+    Hunter.prototype.hunt = function () {
+        this.food = this.food + 5
+    }
+
+    //......................................................................
+
+    //Consumes 2 units of the hunter's food. If the hunter doesn't have 
+    //2 food when they are instructed to eat, they eat as much as they 
+    //can (0 or 1 unit), but the hunter is no longer healthy. 
+    //(A normal traveler eats only 1 unit of food.)
+
+    Hunter.prototype.eat = function () {
+        if (this.food >= 2) {
+            this.food = this.food - 2;
+        }
+        else if (this.food >= 1) {
+            this.food = this.food - 1;
+            this.isHealthy = false; 
+        }
+        else {
+            this.isHealthy = false;
+        }
+    
+    }
+
+    //......................................................................
+
+    //Transfers numOfFoodUnits from the hunter to a different traveler. 
+    //If the hunter has less food than they are being asked to give, then 
+    //no food should be transferred
+
+    Hunter.prototype.giveFood = function(traveler, numOfFoodUnits){
+        // check if hunter has enough food
+        // check hunters food (this.food) against the amount of food to 
+        // transfer (numOfFoodUnits)
+        if (this.food >= numOfFoodUnits){
+            traveler.food = traveler.food + numOfFoodUnits
+            this.food = this.food - numOfFoodUnits
+        }
+
+    }
+
+    //......................................................................
+
+    // Create a wagon that can hold 4 people
+    let wagon = new Wagon(4);
+    // Create five travelers
     let henrietta = new Traveler('Henrietta');
     let juan = new Traveler('Juan');
+    let drsmith = new Doctor('Dr. Smith');
+    let sarahunter = new Hunter('Sara');
     let maude = new Traveler('Maude');
-
-    console.log(`${wagon.getAvailableSeatCount()} should be 2`);
+    console.log(`#1: There should be 4 available seats. Actual: ${wagon.getAvailableSeatCount()}`);
     wagon.join(henrietta);
-
-    console.log(`${wagon.getAvailableSeatCount()} should be 1`);
+    console.log(`#2: There should be 3 available seats. Actual: ${wagon.getAvailableSeatCount()}`);
     wagon.join(juan);
-
+    wagon.join(drsmith);
+    wagon.join(sarahunter);
     wagon.join(maude); // There isn't room for her!
-
-    console.log(`${wagon.getAvailableSeatCount()} should be 0`);
-
-    henrietta.hunt(); // get more food
+    console.log(`#3: There should be 0 available seats. Actual: ${wagon.getAvailableSeatCount()}`);
+    console.log(`#4: There should be 5 total food. Actual: ${wagon.totalFood()}`);
+    sarahunter.hunt(); // gets 5 more food
+    drsmith.hunt();
+    console.log(`#5: There should be 12 total food. Actual: ${wagon.totalFood()}`);
+    henrietta.eat();
+    sarahunter.eat();
+    drsmith.eat();
     juan.eat();
     juan.eat(); // juan is now hungry (sick)
-
-    console.log(`${wagon.shouldQuarantine()} should be true since juan is sick`);
-    console.log(`${wagon.totalFood()} should be 3`);
+    console.log(`#6: Quarantine should be true. Actual: ${wagon.shouldQuarantine()}`);
+    console.log(`#7: There should be 7 total food. Actual: ${wagon.totalFood()}`);
+    drsmith.heal(juan);
+    console.log(`#8: Quarantine should be false. Actual: ${wagon.shouldQuarantine()}`);
+    sarahunter.giveFood(juan, 4);
+    sarahunter.eat(); // She only has 1, so she eats it and is now sick
+    console.log(`#9: Quarantine should be true. Actual: ${wagon.shouldQuarantine()}`);
+    console.log(`#10: There should be 6 total food. Actual: ${wagon.totalFood()}`);
 
 
 

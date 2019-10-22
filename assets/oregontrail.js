@@ -51,11 +51,11 @@
 
     }
 
-    Traveler.prototype.hunt() = function () {
+    Traveler.prototype.hunt = function () {
         this.food = this.food + 2
     }
 
-    Traveler.prototype.eat() = function () {
+    Traveler.prototype.eat = function () {
         if (this.food >= 1) {
             this.food = this.food - 1;
         }
@@ -69,20 +69,48 @@
         this.passengers = [];
     }
 
-    Wagon.prototype.getAvailableSeatCount() = function () {
+    Wagon.prototype.getAvailableSeatCount = function () {
         return this.capacity - this.passengers.length;
     }
 
-    Wagon.prototype.join(traveler) = function () {
-        
+    Wagon.prototype.join = function (traveler) {
+        // if available seat count is not 0
+
+        if (this.getAvailableSeatCount() !== 0) {
+            // add passenger to wagon
+            this.passengers.push(traveler)
+        }
+
     }
 
-    Wagon.prototype.shouldQuarantine() = function () {
-
+    Wagon.prototype.shouldQuarantine = function () {
+        // Return true if there is at least one unhealthy person in the 
+        // wagon. Return false if not.
+        // for (i = 0; i < cars.length; i++) {
+        //     text += cars[i] + "<br>";
+        //   }
+        for (let i = 0; i < this.passengers.length; i++){
+            let currentPassengerHealth = this.passengers[i].isHealthy 
+            if (currentPassengerHealth){
+                // return false
+            }
+            else {
+                return true 
+            }
+        }
+        return false 
     }
 
-    Wagon.prototype.totalFood() = function () {
+    Wagon.prototype.totalFood = function () {
+        let foodSum = 0 
+        for (let i = 0; i < this.passengers.length; i++){
+            let currentPassengerFood = this.passengers[i].food
+            // passengerFood += currentPassengerFood
+            foodSum = foodSum + currentPassengerFood
+            console.log(this.passengers)
 
+        }
+        return foodSum 
     }
 
     // Create a wagon that can hold 2 people

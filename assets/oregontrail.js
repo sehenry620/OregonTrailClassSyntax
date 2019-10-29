@@ -44,166 +44,109 @@
 
     //......................................................................
 
-    function Traveler(name) {
-        this.name = name;
-        this.food = 1;
-        this.isHealthy = true;
 
-    }
-
-    //....................................................................
-
-    Traveler.prototype.hunt = function () {
-        this.food = this.food + 2
-    }
-
-    //....................................................................
-
-    Traveler.prototype.eat = function () {
-        if (this.food >= 1) {
-            this.food = this.food - 1;
-        }
-        else {
-            this.isHealthy = false;
-        }
-    }
-
-    //....................................................................
-
-    function Wagon(capacity) {
-        this.capacity = capacity;
-        this.passengers = [];
-    }
-
-    Wagon.prototype.getAvailableSeatCount = function () {
-        return this.capacity - this.passengers.length;
-    }
-
-    //....................................................................
-
-    Wagon.prototype.join = function (traveler) {
-        // if available seat count is not 0
-
-        if (this.getAvailableSeatCount() !== 0) {
-            // add passenger to wagon
-            this.passengers.push(traveler)
+    class Traveler {
+        constructor(name) {
+            this.name = name;
+            this.food = 1;
+            this.isHealthy = true;
         }
 
-    }
+        hunt() {
+            this.food = this.food + 2;
+        }
 
-    //....................................................................
 
-    Wagon.prototype.shouldQuarantine = function () {
-        // Return true if there is at least one unhealthy person in the 
-        // wagon. Return false if not.
-        for (let i = 0; i < this.passengers.length; i++) {
-            let currentPassengerHealth = this.passengers[i].isHealthy
-            if (currentPassengerHealth) {
-                // return false
+        eat() {
+            if (this.food >= 1) {
+                this.food = this.food - 1;
             }
             else {
-                return true
+                this.isHealthy = false;
+            }
+
+        }
+    }
+
+    class Wagon {
+        constructor(capacity) {
+            this.capacity = capacity;
+            this.passengers = [];
+        }
+
+        getAvailableSeatCount(){
+            return this.capacity - this.passengers.length;
+        }
+
+        join(traveler) {
+            if (this.getAvailableSeatCount() !== 0) {
+                this.passengers.push(traveler)
             }
         }
-        return false
-    }
 
-    //....................................................................
-
-    Wagon.prototype.totalFood = function () {
-        let foodSum = 0
-        for (let i = 0; i < this.passengers.length; i++) {
-            let currentPassengerFood = this.passengers[i].food
-            // passengerFood += currentPassengerFood
-            foodSum = foodSum + currentPassengerFood
-            // console.log(this.passengers)
-
-        }
-        return foodSum
-    }
-
-    //....................................................................
-
-    function Doctor(name) {
-        Traveler.call(this, name);
-    }
-
-    Doctor.prototype = Object.create(Traveler.prototype);
-    Doctor.prototype.constructor = Doctor;
-
-    //....................................................................
-
-    //Pass another Traveler as a parameter to the .heal() method, 
-    //and their isHealthy property is changed to true.
-
-    Doctor.prototype.heal = function (traveler) {
-        traveler.isHealthy = true;
-
-    }
-
-    //......................................................................
-
-    //A Hunter is a Traveler that is better at finding food, but 
-    //requires more food to eat. They should start out with 2 food 
-    //instead of just 1 like other travelers do. They can also give 
-    //food to other travelers:
-
-    function Hunter(name) {
-        Traveler.call(this, name);
-        this.food = 2;
-
-    }
-
-    Hunter.prototype = Object.create(Traveler.prototype);
-    Hunter.prototype.constructor = Hunter;
-
-    //......................................................................
-
-    //Increase the hunter's food by 5. (A normal traveler gains only 2.)
-
-    Hunter.prototype.hunt = function () {
-        this.food = this.food + 5
-    }
-
-    //......................................................................
-
-    //Consumes 2 units of the hunter's food. If the hunter doesn't have 
-    //2 food when they are instructed to eat, they eat as much as they 
-    //can (0 or 1 unit), but the hunter is no longer healthy. 
-    //(A normal traveler eats only 1 unit of food.)
-
-    Hunter.prototype.eat = function () {
-        if (this.food >= 2) {
-            this.food = this.food - 2;
-        }
-        else if (this.food >= 1) {
-            this.food = this.food - 1;
-            this.isHealthy = false; 
-        }
-        else {
-            this.isHealthy = false;
-        }
-    
-    }
-
-    //......................................................................
-
-    //Transfers numOfFoodUnits from the hunter to a different traveler. 
-    //If the hunter has less food than they are being asked to give, then 
-    //no food should be transferred
-
-    Hunter.prototype.giveFood = function(traveler, numOfFoodUnits){
-        // check if hunter has enough food
-        // check hunters food (this.food) against the amount of food to 
-        // transfer (numOfFoodUnits)
-        if (this.food >= numOfFoodUnits){
-            traveler.food = traveler.food + numOfFoodUnits
-            this.food = this.food - numOfFoodUnits
+        shouldQuarantine() {
+            for (let i = 0; i < this.passengers.length; i++) {
+                let currentPassengerHealth = this.passengers[i].isHealthy
+                if (currentPassengerHealth) {
+                }
+                else {
+                    return true
+                }
+            }
+            return false
         }
 
+        totalFood() {
+            let foodSum = 0
+            for (let i = 0; i < this.passengers.length; i++) {
+                let currentPassengerFood = this.passengers[i].food
+                foodSum = foodSum + currentPassengerFood
+
+            }
+            return foodSum
+        }
     }
 
-    //......................................................................
+    class Doctor extends Traveler {
+        constructor(name) {
+            super(name);
+        }
+
+        heal(traveler) {
+            traveler.isHealthy = true;
+
+        }
+    }
+
+    class Hunter extends Traveler {
+        constructor(name) {
+            super(name);
+            this.food = 2;
+        }
+
+        hunt() {
+            this.food = this.food + 5
+        }
+
+        eat() {
+            if (this.food >= 2) {
+                this.food = this.food - 2;
+            }
+            else if (this.food >= 1) {
+                this.food = this.food - 1;
+                this.isHealthy = false;
+            }
+            else {
+                this.isHealthy = false;
+            }
+        }
+        giveFood(traveler, numOffoodUnits) {
+            if (this.food >= numOffoodUnits) {
+                traveler.food = traveler.food + numOffoodUnits
+                this.food = this.food - numOffoodUnits
+            }
+        }
+    }
 
     // Create a wagon that can hold 4 people
     let wagon = new Wagon(4);
